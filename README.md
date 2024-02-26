@@ -7,26 +7,29 @@ SELECT location, date, total_cases, new_cases, total_deaths,population
 FROM `stellar-utility-391117.covid_data.covid_deaths` 
 ORDER BY 1,2;
 ```
-
+```
 /* Ratio of deaths over cases*/
 SELECT  location, date, total_cases, total_deaths,(total_deaths/total_cases)*100 as DeathsRatio
 FROM `stellar-utility-391117.covid_data.covid_deaths` 
 WHERE location like '%States%' 
 ORDER BY 1,2;
-
+```
+```
 /*Location had the highest number of infection cases*/
 SELECT  location, population, MAX(total_cases) as highestInfectionCount,MAX((total_cases/population)*100) as HighestContractionPercentage
 FROM `stellar-utility-391117.covid_data.covid_deaths` 
 GROUP BY population, location
 ORDER BY HighestContractionPercentage desc;
-
+```
+```
 /*The continent had the highest number of Covid deathe*/
 SELECT  continent, sum(total_deaths) as highestDeathsCount,sum((total_deaths/population)*100) as HighestDeathPercentage
 FROM `stellar-utility-391117.covid_data.covid_deaths` 
 WHERE continent is not null
 GROUP BY  continent
 ORDER BY highestDeathsCount desc;
- 
+ ```
+```
 /*GLOBAL ANALYSIS*/
 SELECT  sum(cast(new_cases as int)) , sum(cast(new_deaths as int)), sum(new_deaths)/sum(new_cases)*100 as DeathPercentage
 FROM `stellar-utility-391117.covid_data.covid_deaths` 
@@ -34,7 +37,8 @@ WHERE continent is not null
 --GROUP BY date
 ORDER BY 1,2;
 /*result shows approximately 0.9% death rate of Covid contraction*/
-
+```
+```
 /*JOIN Covid_deaths data vs Covid_vaccination data*/
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations
 FROM `stellar-utility-391117.covid_data.covid_deaths` dea
@@ -45,13 +49,12 @@ WHERE dea.continent is not null
   AND vac.new_vaccinations is not null 
 ORDER BY 3;
 /* result is  the 1st vaccinated was in Norway on 2020-12-09 */
-
+```
 -------------------------------------------------------------------------
-
+```
 /*Total population vs vaccinations*/
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
   SUM(vac.new_vaccinations) OVER (PARTITION BY dea.location order by dea.location,dea.date) as RollingTotalVaccinated,
-
 FROM `stellar-utility-391117.covid_data.covid_deaths` dea
 JOIN `stellar-utility-391117.covid_data.covid_vaccination` vac 
   ON dea.location = vac.location
@@ -59,14 +62,14 @@ JOIN `stellar-utility-391117.covid_data.covid_vaccination` vac
 WHERE dea.continent is not null
   AND vac.new_vaccinations is not null 
 ORDER BY 2,3;
-
+```
+```
 /*Using CTE to calculate the rolling total number of vaccinated case divided by the total population by location AKA country*/
 WITH RECURSIVE PopVsVac--(Continent, Location, DATE, Population,New_Vaccinations, RollingTotalVaccinated)
 AS
 (
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
   SUM(vac.new_vaccinations) OVER (PARTITION BY dea.location order by dea.location,dea.date) as RollingTotalVaccinated
-
 FROM `stellar-utility-391117.covid_data.covid_deaths` dea
 JOIN `stellar-utility-391117.covid_data.covid_vaccination` vac 
   ON dea.location = vac.location
@@ -76,7 +79,8 @@ WHERE dea.continent is not null
 )
 SELECT *, (RollingTotalVaccinated/Population)/100
 FROM PopVsVac;
-
+```
+```
 /*USE TEMP TABLE*/
 --BEGIN
 CREATE TEMP TABLE _SESSION.percentPopulationVaccinated
@@ -102,7 +106,8 @@ WHERE dea.continent is not null
 --END;
 SELECT *, (rolling_People_Vaccinated/Population)/100
 FROM _SESSION.percentPopulationVaccinated;
-
+```
+```
 /*Create Views for later visualization*/
 CREATE VIEW `stellar-utility-391117.covid_data.PopulationVaccinated`
 AS
@@ -116,3 +121,4 @@ JOIN `stellar-utility-391117.covid_data.covid_vaccination` vac
   AND dea.date = vac.date
 WHERE dea.continent is not null
   AND vac.new_vaccinations is not null);
+```
