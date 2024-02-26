@@ -1,10 +1,12 @@
 # Covid Analysis Using Google Cloud Big Query for explorating the covid death and covid vaccination public datasets
 ## Link to Dataset: [https://ourworldindata.org/covid-deaths](https://ourworldindata.org/covid-vaccinations) and [https://ourworldindata.org/covid-vaccinations](https://ourworldindata.org/covid-vaccinations)
 
+```
 /* Extract data for analysis*/
 SELECT location, date, total_cases, new_cases, total_deaths,population
 FROM `stellar-utility-391117.covid_data.covid_deaths` 
 ORDER BY 1,2;
+```
 
 /* Ratio of deaths over cases*/
 SELECT  location, date, total_cases, total_deaths,(total_deaths/total_cases)*100 as DeathsRatio
